@@ -4,8 +4,6 @@
 #include <time.h>
 #include <ctype.h>
 
-#define TAMANHO 100000
-
 // Quick Sort
 void QuickSort(int *v, int tam) {
     int j = tam, k;
@@ -165,7 +163,29 @@ void MergeSort(int *v, int inicio, int fim) {
     free(t);
 }
 
+// Obter o tamanho do vetor pelo total de valores dentro do arquivo
+int GetTamanhoVetor(char *p) {
+    FILE *arq = fopen(p, "r");
+    if (arq == NULL) {
+        printf("Arquivo não encontrado.\n");
+        return 0;
+    }
+    char linha[128];
+    int tam = -1;
+    while (fscanf(arq, "%[^\n]", linha) != EOF) {
+        fgetc(arq);
+        tam++;
+    }
+    fclose(arq);
+    return tam;
+}
+
 int main(int argc, char const *argv[]) {
+    FILE *arquivo;
+    int tamanho, *v;
+    char *caminho;
+    clock_t inicio, fim, total;
+
     if (argc != 3) {
         printf("Uso: ./programa [algoritmo] [caminho]\n");
         return 1;
@@ -176,56 +196,66 @@ int main(int argc, char const *argv[]) {
         return 1;
     }
 
-    FILE *arq;
-    int tamanho;
-
-    char temp[] = "";
-    for (int i = 0; i < strlen(argv[2]); i++) {
-        if ((int) argv[2][i] < 48 || (int) argv[2][i] > 57) {
-            break;
-        }
-        temp[i] += argv[2][i];
-    }
-    if (strcmp(temp, "") == 0) {
-        printf("Não foi possível alocar o tamanho do vetor.\n");
-        return 1;
-    }
-    tamanho = atoi(temp);
-
-    char valor[tamanho];
-
-    if (strcmp(argv[1], "quick") == 0) {
-        arq = fopen(realpath(argv[2], NULL), "r");
-        if (arq == NULL) {
-            printf("Arquivo não encontrado.");
+    caminho = realpath(argv[2], NULL);
+    tamanho = GetTamanhoVetor(caminho);
+    v = malloc(tamanho * sizeof(int));
+    if (tamanho > 0) {
+        arquivo = fopen(caminho, "r");
+        if (arquivo == NULL) {
+            printf("Arquivo não encontrado.\n");
             return 1;
         }
-        while (!feof(arq))
-        {
-            fgets(valor, tamanho, arq);
-            printf("%s", valor);
+        char linha[128];
+        for (int i = 0; i < tamanho; i++) {
+            fscanf(arquivo, "%[^\n]", linha);
+            fgetc(arquivo);
+            v[i] = atoi(linha);
         }
+        fclose(arquivo);
     }
-    // else if (strcmp(tolower(argv[1]), "insertion")) {
-        
-    // }
-    // else if (strcmp(tolower(argv[1]), "selection")) {
-        
-    // }
-    // else if (strcmp(tolower(argv[1]), "bubble")) {
+    else {
+        printf("O arquivo está vazio.");
+        return 1;
+    }
 
-    // }
-    // else if (strcmp(tolower(argv[1]), "heap")) {
+    inicio = clock();
+    if (strcmp(argv[1], "quick") == 0) {
+        printf("Iniciando o algoritmo QuickSort...\n");
+        QuickSort(v, tamanho);
+    }
+    else if (strcmp(argv[1], "insertion") == 0) {
+        printf("Iniciando o algoritmo InsertionSort...\n");
+        InsertionSort(v, tamanho);
+    }
+    else if (strcmp(argv[1], "selection") == 0) {
+        printf("Iniciando o algoritmo SelectionSort...\n");
+        SelectionSort(v, tamanho);
+    }
+    else if (strcmp(argv[1], "bubble") == 0) {
+        printf("Iniciando o algoritmo BubbleSort...\n");
+        BubbleSort(v, tamanho);
+    }
+    else if (strcmp(argv[1], "heap") == 0) {
+        printf("Iniciando o algoritmo HeapSort...\n");
+        HeapSort(v, tamanho);
+    }
+    else if (strcmp(argv[1], "merge") == 0) {
+        printf("Iniciando o algoritmo MergeSort...\n");
+        MergeSort(v, 0, tamanho - 1);
+    }
+    else {
+        printf("Algoritmo inexistente.\n");
+        return 1;
+    }
+    fim = clock();
 
-    // }
-    // else if (strcmp(tolower(argv[1]), "merge")) {
+    total = (double) (fim - inicio) / CLOCKS_PER_SEC;
 
-    // }
-    // else {
-    //     printf("Algoritmo inexistente.");
-    //     return 1;
-    // }
-    
-    // SelectionSort(vqs, TAMANHO);
+    printf("--------------------------------------------\n");
+    printf("Início: %ld ms\n", inicio);
+    printf("Fim: %ld ms\n", fim);
+    printf("Total: %ld segundos\n", total);
+    printf("--------------------------------------------\n");
+
     return 0;
 }
