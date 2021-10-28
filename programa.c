@@ -181,11 +181,6 @@ int GetTamanhoVetor(char *p) {
 }
 
 int main(int argc, char const *argv[]) {
-    FILE *arquivo;
-    int tamanho, *v;
-    char *caminho;
-    clock_t inicio, fim, total;
-
     if (argc != 3) {
         printf("Uso: ./programa [algoritmo] [caminho]\n");
         return 1;
@@ -195,6 +190,10 @@ int main(int argc, char const *argv[]) {
         printf("O caminho passado não foi encontrado.\n");
         return 1;
     }
+
+    FILE *arquivo;
+    int tamanho, *v;
+    char *caminho;
 
     caminho = realpath(argv[2], NULL);
     tamanho = GetTamanhoVetor(caminho);
@@ -217,6 +216,8 @@ int main(int argc, char const *argv[]) {
         printf("O arquivo está vazio.");
         return 1;
     }
+
+    clock_t inicio, fim, total;
 
     inicio = clock();
     if (strcmp(argv[1], "quick") == 0) {
@@ -251,11 +252,14 @@ int main(int argc, char const *argv[]) {
 
     total = (double) (fim - inicio) / CLOCKS_PER_SEC;
 
-    printf("--------------------------------------------\n");
-    printf("Início: %ld ms\n", inicio);
-    printf("Fim: %ld ms\n", fim);
-    printf("Total: %ld segundos\n", total);
-    printf("--------------------------------------------\n");
-
+    arquivo = fopen("Benchmark.txt", "a");
+    if (arquivo == NULL) {
+        printf("Arquivo não encontrado.\n");
+        return 1;
+    }
+    fprintf(arquivo, "%s\n", argv[1]);
+    fprintf(arquivo, "%s\n    -> %ld ms\n    -> %ld ms\n    -> %ld segundos\n\n", argv[2], inicio, fim, total);
+    fclose(arquivo);
+    
     return 0;
 }
