@@ -193,7 +193,9 @@ int main(int argc, char const *argv[]) {
 
     FILE *arquivo;
     int tamanho, *v;
-    char *caminho;
+    char *caminho, algoritmo[100];
+    
+    strcpy(algoritmo, argv[1]);
 
     caminho = realpath(argv[2], NULL);
     tamanho = GetTamanhoVetor(caminho);
@@ -220,27 +222,27 @@ int main(int argc, char const *argv[]) {
     clock_t inicio, fim, total;
 
     inicio = clock();
-    if (strcmp(argv[1], "quick") == 0) {
+    if (strcmp(algoritmo, "quick") == 0) {
         printf("Iniciando o algoritmo QuickSort...\n");
         QuickSort(v, tamanho);
     }
-    else if (strcmp(argv[1], "insertion") == 0) {
+    else if (strcmp(algoritmo, "insertion") == 0) {
         printf("Iniciando o algoritmo InsertionSort...\n");
         InsertionSort(v, tamanho);
     }
-    else if (strcmp(argv[1], "selection") == 0) {
+    else if (strcmp(algoritmo, "selection") == 0) {
         printf("Iniciando o algoritmo SelectionSort...\n");
         SelectionSort(v, tamanho);
     }
-    else if (strcmp(argv[1], "bubble") == 0) {
+    else if (strcmp(algoritmo, "bubble") == 0) {
         printf("Iniciando o algoritmo BubbleSort...\n");
         BubbleSort(v, tamanho);
     }
-    else if (strcmp(argv[1], "heap") == 0) {
+    else if (strcmp(algoritmo, "heap") == 0) {
         printf("Iniciando o algoritmo HeapSort...\n");
         HeapSort(v, tamanho);
     }
-    else if (strcmp(argv[1], "merge") == 0) {
+    else if (strcmp(algoritmo, "merge") == 0) {
         printf("Iniciando o algoritmo MergeSort...\n");
         MergeSort(v, 0, tamanho - 1);
     }
@@ -257,9 +259,15 @@ int main(int argc, char const *argv[]) {
         printf("Arquivo não encontrado.\n");
         return 1;
     }
-    fprintf(arquivo, "%s\n", argv[1]);
+    fprintf(arquivo, "%s\n", algoritmo);
     fprintf(arquivo, "%s\n    -> %ld ms\n    -> %ld ms\n    -> %ld segundos\n\n", argv[2], inicio, fim, total);
     fclose(arquivo);
+
+    printf("-------------------------------\n");
+    printf("Inicio: %ld\n", inicio);
+    printf("Fim: %ld\n", fim);
+    printf("Total: %ld\n", total);
+    printf("-------------------------------\n");
     
     return 0;
 }
