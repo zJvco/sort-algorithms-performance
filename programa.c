@@ -264,9 +264,9 @@ int main(int argc, char const *argv[]) {
     fclose(arquivo);
 
     printf("-------------------------------\n");
-    printf("Inicio: %ld\n", inicio);
-    printf("Fim: %ld\n", fim);
-    printf("Total: %ld\n", total);
+    printf("Inicio: %ld ms\n", inicio);
+    printf("Fim: %ld ms\n", fim);
+    printf("Total: %ld segundos\n", total);
     printf("-------------------------------\n");
     
     return 0;
