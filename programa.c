@@ -260,7 +260,7 @@ int main(int argc, char const *argv[]) {
         return 1;
     }
     fprintf(arquivo, "%s\n", algoritmo);
-    fprintf(arquivo, "%s\n    -> %ld ms\n    -> %ld ms\n    -> %ld segundos\n\n", argv[2], inicio, fim, total);
+    fprintf(arquivo, "%s\n    -> Início: %ld ms\n    -> Fim: %ld ms\n    -> Total: %ld segundos\n\n", argv[2], inicio, fim, total);
     fclose(arquivo);
 
     printf("-------------------------------\n");
