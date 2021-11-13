@@ -252,6 +252,8 @@ int main(int argc, char const *argv[]) {
     }
     fim = clock();
 
+    // CLOCKS_PER_SEC = 1.000.000
+
     total = (double) (fim - inicio) / CLOCKS_PER_SEC;
 
     arquivo = fopen("Benchmark.txt", "a");
