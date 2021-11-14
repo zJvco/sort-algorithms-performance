@@ -164,7 +164,7 @@ void MergeSort(int *v, int inicio, int fim) {
 }
 
 // Obter o tamanho do vetor pelo total de valores dentro do arquivo
-int GetTamanhoVetor(char *p) {
+int GetTamanhoVetorArquivo(char *p) {
     FILE *arq = fopen(p, "r");
     if (arq == NULL) {
         printf("Arquivo não encontrado.\n");
@@ -181,41 +181,61 @@ int GetTamanhoVetor(char *p) {
 }
 
 int main(int argc, char const *argv[]) {
-    if (argc != 3) {
-        printf("Uso: ./programa [algoritmo] [caminho]\n");
-        return 1;
-    }
-
-    if (realpath(argv[2], NULL) == NULL) {
-        printf("O caminho passado não foi encontrado.\n");
+    if (argc != 4) {
+        printf("Uso [dados externos]: ./programa [type] [algoritmo] [caminho]\nUso [dados internos]: ./programa [type] [algoritmo] [tamanho]\n");
         return 1;
     }
 
     FILE *arquivo;
     int tamanho, *v;
-    char *caminho, algoritmo[100];
-    
-    strcpy(algoritmo, argv[1]);
+    char algoritmo[100];
 
-    caminho = realpath(argv[2], NULL);
-    tamanho = GetTamanhoVetor(caminho);
-    v = malloc(tamanho * sizeof(int));
-    if (tamanho > 0) {
-        arquivo = fopen(caminho, "r");
-        if (arquivo == NULL) {
-            printf("Arquivo não encontrado.\n");
+    strcpy(algoritmo, argv[2]);
+
+    // Gerar dados externos (Arquivos de texto)
+    if (strcmp(argv[1], "-e") == 0) {
+        char *caminho = realpath(argv[3], NULL);
+        if (caminho == NULL) {
+            printf("O caminho passado não foi encontrado.\n");
             return 1;
         }
-        char linha[128];
-        for (int i = 0; i < tamanho; i++) {
-            fscanf(arquivo, "%[^\n]", linha);
-            fgetc(arquivo);
-            v[i] = atoi(linha);
+        tamanho = GetTamanhoVetorArquivo(caminho);
+        v = malloc(tamanho * sizeof(int));
+        if (tamanho > 0) {
+            arquivo = fopen(caminho, "r");
+            if (arquivo == NULL) {
+                printf("Arquivo não encontrado.\n");
+                return 1;
+            }
+            char linha[128];
+            for (int i = 0; i < tamanho; i++) {
+                fscanf(arquivo, "%[^\n]", linha);
+                fgetc(arquivo);
+                v[i] = atoi(linha);
+            }
+            fclose(arquivo);
         }
-        fclose(arquivo);
+        else {
+            printf("O arquivo está vazio.\n");
+            return 1;
+        }
+    }
+    // Gerar dados internos (Aleatórios)
+    else if (strcmp(argv[1], "-i") == 0) {
+        for (int i = 0; i < strlen(argv[3]); i++) {
+            if (argv[3][i] < 48 || argv[3][i] > 57) {
+                printf("Digite um número inteiro positivo válido\n");
+                return 1;
+            }
+        }
+        tamanho = atoi(argv[3]);
+        v = malloc(tamanho * sizeof(int));
+        for (int i = 0; i < tamanho; i++) {
+            v[i] = rand();
+        }
     }
     else {
-        printf("O arquivo está vazio.");
+        printf("Escolha entre gerar dados externos [-e] ou internos [-i]\n");
         return 1;
     }
 
@@ -261,8 +281,9 @@ int main(int argc, char const *argv[]) {
         printf("Arquivo não encontrado.\n");
         return 1;
     }
-    fprintf(arquivo, "%s\n", algoritmo);
-    fprintf(arquivo, "%s\n    -> Início: %ld ms\n    -> Fim: %ld ms\n    -> Total: %ld segundos\n\n", argv[2], inicio, fim, total);
+    fprintf(arquivo, "Algoritmo: %s\n", algoritmo);
+    fprintf(arquivo, "%s: %s\n", strcmp(argv[1], "-e") == 0 ? "Caminho" : "Tamanho", argv[3]);
+    fprintf(arquivo, "\t-> Início: %ld ms\n\t-> Fim: %ld ms\n\t-> Total: %ld segundos\n\n", inicio, fim, total);
     fclose(arquivo);
 
     printf("-------------------------------\n");
