@@ -230,6 +230,7 @@ int main(int argc, char const *argv[]) {
         }
         tamanho = atoi(argv[3]);
         v = malloc(tamanho * sizeof(int));
+        srand(time(0));
         for (int i = 0; i < tamanho; i++) {
             v[i] = rand();
         }
@@ -239,58 +240,83 @@ int main(int argc, char const *argv[]) {
         return 1;
     }
 
+    // Copiar os dados dentro do vetor para uma variável temporária para guardar os dados não ordenados
+    int *vtemp = malloc(tamanho * sizeof(int));
+    for (int i = 0; i < tamanho; i++) {
+        vtemp[i] = v[i];
+    }
+
     clock_t inicio, fim, total;
 
     inicio = clock();
     if (strcmp(algoritmo, "quick") == 0) {
-        printf("Iniciando o algoritmo QuickSort...\n");
+        printf("Iniciando o algoritmo QuickSort... ");
         QuickSort(v, tamanho);
     }
     else if (strcmp(algoritmo, "insertion") == 0) {
-        printf("Iniciando o algoritmo InsertionSort...\n");
+        printf("Iniciando o algoritmo InsertionSort... ");
         InsertionSort(v, tamanho);
     }
     else if (strcmp(algoritmo, "selection") == 0) {
-        printf("Iniciando o algoritmo SelectionSort...\n");
+        printf("Iniciando o algoritmo SelectionSort... ");
         SelectionSort(v, tamanho);
     }
     else if (strcmp(algoritmo, "bubble") == 0) {
-        printf("Iniciando o algoritmo BubbleSort...\n");
+        printf("Iniciando o algoritmo BubbleSort... ");
         BubbleSort(v, tamanho);
     }
     else if (strcmp(algoritmo, "heap") == 0) {
-        printf("Iniciando o algoritmo HeapSort...\n");
+        printf("Iniciando o algoritmo HeapSort... ");
         HeapSort(v, tamanho);
     }
     else if (strcmp(algoritmo, "merge") == 0) {
-        printf("Iniciando o algoritmo MergeSort...\n");
+        printf("Iniciando o algoritmo MergeSort... ");
         MergeSort(v, 0, tamanho - 1);
     }
     else {
-        printf("Algoritmo inexistente.\n");
+        printf("Algoritmo não encontrado.\n");
         return 1;
     }
     fim = clock();
 
     // CLOCKS_PER_SEC = 1.000.000
-
     total = (double) (fim - inicio) / CLOCKS_PER_SEC;
 
-    arquivo = fopen("Benchmark.txt", "a");
+    // Gerar o benchmark
+    arquivo = fopen("benchmark.txt", "w");
     if (arquivo == NULL) {
         printf("Arquivo não encontrado.\n");
         return 1;
     }
+
     fprintf(arquivo, "Algoritmo: %s\n", algoritmo);
-    fprintf(arquivo, "%s: %s\n", strcmp(argv[1], "-e") == 0 ? "Caminho" : "Tamanho", argv[3]);
+
+    fprintf(arquivo, "Dados: ");
+    for (int k = 0; k < tamanho; k++) {
+        fprintf(arquivo, "%d", vtemp[k]);
+        if (k == tamanho - 1) {
+            continue;
+        }
+        fprintf(arquivo, ", ");
+    }
+
+    fprintf(arquivo, "\nDados ordenados: ");
+    for (int k = 0; k < tamanho; k++) {
+        fprintf(arquivo, "%d", v[k]);
+        if (k == tamanho - 1) {
+            continue;
+        }
+        fprintf(arquivo, ", ");
+    }
+
+    fprintf(arquivo, "\n%s: %s\n", strcmp(argv[1], "-e") == 0 ? "Caminho" : "Tamanho", argv[3]);
     fprintf(arquivo, "\t-> Início: %ld ms\n\t-> Fim: %ld ms\n\t-> Total: %ld segundos\n\n", inicio, fim, total);
     fclose(arquivo);
 
-    printf("-------------------------------\n");
-    printf("Inicio: %ld ms\n", inicio);
-    printf("Fim: %ld ms\n", fim);
-    printf("Total: %ld segundos\n", total);
-    printf("-------------------------------\n");
-    
+    printf("Resultados gravados em benchmark.txt\n");
+
+    free(vtemp);
+    free(v);
+
     return 0;
 }
