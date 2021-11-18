@@ -310,7 +310,7 @@ int main(int argc, char const *argv[]) {
     }
 
     fprintf(arquivo, "\n%s: %s\n", strcmp(argv[1], "-e") == 0 ? "Caminho" : "Tamanho", argv[3]);
-    fprintf(arquivo, "\t-> Início: %ld ms\n\t-> Fim: %ld ms\n\t-> Total: %ld segundos\n\n", inicio, fim, total);
+    fprintf(arquivo, "\t-> Início: %ld ms\n\t-> Fim: %ld ms\n\t-> Total: %ld segundos\n\n", inicio / 1000, fim / 1000, total);
     fclose(arquivo);
 
     printf("Resultados gravados em benchmark.txt\n");
